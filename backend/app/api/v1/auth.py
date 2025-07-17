@@ -39,7 +39,7 @@ async def register(
     existing_user = get_user_by_email(db, email)
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
+
     existing_user = get_user_by_mobile(db, mobile_number)
     if existing_user:
         raise HTTPException(status_code=400, detail="Mobile number already registered")
@@ -67,7 +67,7 @@ async def register(
         available_timeslots=available_timeslots,
     )
 
-    user = create_user(db, user_data)
+    user = create_user(db, user_data, file_path)
     return user
 
 
