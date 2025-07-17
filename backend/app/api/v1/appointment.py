@@ -114,7 +114,8 @@ def list_appointments(
     if patient_name:
         query = query.join(User, Appointment.patient_id == User.id)\
                     .filter(User.full_name.ilike(f"%{patient_name}%"))
-
+        
+    query = query.order_by(Appointment.appointment_time.desc())
     appointments = query.all()
     return appointments
 
