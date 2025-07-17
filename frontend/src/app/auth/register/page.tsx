@@ -135,7 +135,12 @@ export default function Register() {
       alert("✅ Registration successful!");
       router.push("/auth/login");
     } catch (err: any) {
-      setErrors([err?.response?.data?.detail || "Registration failed. Please try again."]);
+      const errorDetail = err?.response?.data?.detail;
+      if (Array.isArray(errorDetail)) {
+        setErrors(errorDetail.map((e: any) => e.msg));
+      } else {
+        setErrors([errorDetail || "Registration failed. Please try again."]);
+      }
     } finally {
       setIsLoading(false);
     }

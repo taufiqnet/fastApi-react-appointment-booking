@@ -23,7 +23,7 @@ class UserBase(BaseModel):
     division: Optional[str] = None
     district: Optional[str] = None
     thana: Optional[str] = None
-    profile_image: Optional[str] = None
+    profile_image: Optional[bytes] = None
 
     license_number: Optional[str] = Field(default=None, validate_default=True)
     experience_years: Optional[int] = Field(default=None, validate_default=True)

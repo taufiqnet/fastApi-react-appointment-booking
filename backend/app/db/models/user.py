@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Enum, Text, Float
+from sqlalchemy import Column, String, Integer, Enum, Text, Float, LargeBinary
 from sqlalchemy.orm import relationship
 from app.db.database import Base
 from app.db.models.appointment import Appointment
@@ -26,7 +26,7 @@ class User(Base):
     district = Column(String(50), nullable=True)
     thana = Column(String(50), nullable=True)
 
-    profile_image = Column(String(255), nullable=True)
+    profile_image = Column(LargeBinary, nullable=True)
 
     # Doctor-specific fields
     license_number = Column(String(50), nullable=True)
