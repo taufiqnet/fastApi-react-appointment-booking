@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, validator
+from .user import UserBase
 from typing import Literal, Optional
 from datetime import datetime, timezone
 
@@ -17,6 +18,8 @@ class AppointmentOut(BaseModel):  # ✅ Do NOT inherit from AppointmentCreate
     id: int
     patient_id: int
     doctor_id: int
+    doctor: Optional[UserBase]
+    patient: Optional[UserBase]
     appointment_time: datetime
     notes: Optional[str] = None
     status: Literal["Pending", "Confirmed", "Cancelled", "Completed"]

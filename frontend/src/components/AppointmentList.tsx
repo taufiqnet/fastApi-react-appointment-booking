@@ -243,10 +243,10 @@ export default function AppointmentList() {
                 <tr key={appt.id} className="hover:bg-gray-50">
                   <td className="p-2 border">{(currentPage - 1) * rowsPerPage + idx + 1}</td>
                   {user?.user_type !== "doctor" && (
-                    <td className="p-2 border">{appt.patient?.full_name || "N/A"}</td>
+                    <td className="p-2 border">{appt.doctor?.full_name || "N/A"}</td>
                   )}
                   {user?.user_type !== "patient" && (
-                    <td className="p-2 border">{appt.doctor?.full_name || "N/A"}</td>
+                    <td className="p-2 border">{appt.patient?.full_name || "N/A"}</td>
                   )}
                   <td className="p-2 border">{new Date(appt.appointment_time).toLocaleString()}</td>
                   <td className="p-2 border">{appt.notes}</td>
