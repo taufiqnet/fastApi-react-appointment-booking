@@ -80,7 +80,25 @@ export default function AppointmentList() {
     fetchAppointments();
   }, [token]);
 
-  // ... (keep your existing updateStatus function)
+  const updateStatus = async (id: number, status: Appointment["status"]) => {
+    if (!token) return;
+
+    setUpdatingIds((prev) => [...prev, id]);
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/v1/appointment/appointments/${id}/status`,
+        { status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchAppointments();
+      setNotification({ message: "Status updated successfully.", type: "success" });
+    } catch (err) {
+      console.error("Error updating status", err);
+      setNotification({ message: "Error updating status.", type: "error" });
+    } finally {
+      setUpdatingIds((prev) => prev.filter((updatingId) => updatingId !== id));
+    }
+  };
 
   const handleFilter = () => {
     fetchAppointments();
@@ -101,6 +119,12 @@ export default function AppointmentList() {
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   return (
     <Layout>
