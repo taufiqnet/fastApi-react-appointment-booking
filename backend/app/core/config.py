@@ -1,19 +1,9 @@
-# import os
-# from dotenv import load_dotenv
-# load_dotenv()
-
-# class Settings:
-#     JWT_SECRET = os.getenv("JWT_SECRET", "secretkey")
-#     JWT_ALGORITHM = "HS256"
-#     ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
-#     DB_URL = os.getenv("DATABASE_URL")
-
-# settings = Settings()
-
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load variables from .env
+# Load a .env.test file if it exists, otherwise load .env
+dotenv_path = '.env.test' if os.path.exists('.env.test') else '.env'
+load_dotenv(dotenv_path=dotenv_path)
 
 class Settings:
     # JWT

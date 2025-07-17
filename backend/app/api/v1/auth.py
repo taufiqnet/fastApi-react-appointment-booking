@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal
-from app.db.schemas.user import LoginSchema, TokenSchema
-from app.db.crud.user import get_user_by_email
+from app.db.schemas.user import LoginSchema, TokenSchema, UserCreate, UserOut
+from app.db.crud.user import get_user_by_email, create_user, get_user_by_mobile
 from app.core.security import verify_password, create_access_token
+import os
+import uuid
 
 router = APIRouter()
 
@@ -14,16 +16,58 @@ def get_db():
     finally:
         db.close()
 
-from app.db.schemas.user import UserCreate, UserOut
-from app.db.crud.user import create_user
+UPLOAD_DIR = "uploads/profile_images"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/register", response_model=UserOut)
-def register(data: UserCreate, db: Session = Depends(get_db)):
-    existing_user = get_user_by_email(db, data.email)
+async def register(
+    full_name: str = Form(...),
+    email: str = Form(...),
+    mobile_number: str = Form(...),
+    password: str = Form(...),
+    user_type: str = Form(...),
+    division: str = Form(None),
+    district: str = Form(None),
+    thana: str = Form(None),
+    license_number: str = Form(None),
+    experience_years: int = Form(None),
+    consultation_fee: float = Form(None),
+    available_timeslots: str = Form(None),
+    profile_image: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    existing_user = get_user_by_email(db, email)
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    user = create_user(db, data)
+
+    existing_user = get_user_by_mobile(db, mobile_number)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Mobile number already registered")
+
+    # Save the profile image to the filesystem
+    file_extension = os.path.splitext(profile_image.filename)[1]
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    file_path = os.path.join(UPLOAD_DIR, unique_filename)
+    with open(file_path, "wb") as buffer:
+        buffer.write(await profile_image.read())
+
+    user_data = UserCreate(
+        full_name=full_name,
+        email=email,
+        mobile_number=mobile_number,
+        password=password,
+        user_type=user_type,
+        division=division,
+        district=district,
+        thana=thana,
+        profile_image=file_path,
+        license_number=license_number,
+        experience_years=experience_years,
+        consultation_fee=consultation_fee,
+        available_timeslots=available_timeslots,
+    )
+
+    user = create_user(db, user_data, file_path)
     return user
 
 
@@ -47,5 +91,3 @@ def login(data: LoginSchema, db: Session = Depends(get_db)):
         "user_type": user.user_type.value if hasattr(user.user_type, "value") else user.user_type,
         "email": user.email
     }
-
-
