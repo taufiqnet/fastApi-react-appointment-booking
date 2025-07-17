@@ -109,8 +109,8 @@ This structure supports a robust backend application with API handling, task sch
 ### Backend Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/appointment-booking-system.git
-   cd appointment-booking-system/backend
+   git clone https://github.com/your-username/fastApi-react-appointment-booking.git
+   cd fastApi-react-appointment-booking/backend
    ```
 2. Create a virtual environment and install dependencies:
    ```bash
