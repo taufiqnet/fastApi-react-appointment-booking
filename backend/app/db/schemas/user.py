@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import re
 import logging
 from typing import Optional, Literal
@@ -158,4 +157,3 @@ class LoginSchema(BaseModel):
 class TokenSchema(BaseModel):
     access_token: str
     token_type: str = "bearer"
->>>>>>> 32db5770376e2b4a45d4de9155b1b355957b5b69
