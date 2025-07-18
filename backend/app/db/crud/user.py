@@ -18,7 +18,7 @@ def create_user(db: Session, user_data, image_data: bytes):
         division=user_data.division,
         district=user_data.district,
         thana=user_data.thana,
-        profile_image=image_data,
+        profile_image=image_data, # Use the provided image data
         license_number=user_data.license_number,
         experience_years=user_data.experience_years,
         consultation_fee=user_data.consultation_fee,

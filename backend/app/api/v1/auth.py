@@ -44,12 +44,7 @@ async def register(
     if existing_user:
         raise HTTPException(status_code=400, detail="Mobile number already registered")
 
-    # Save the profile image to the filesystem
-    file_extension = os.path.splitext(profile_image.filename)[1]
-    unique_filename = f"{uuid.uuid4()}{file_extension}"
-    file_path = os.path.join(UPLOAD_DIR, unique_filename)
-    with open(file_path, "wb") as buffer:
-        buffer.write(await profile_image.read())
+    image_data = await profile_image.read()
 
     user_data = UserCreate(
         full_name=full_name,
@@ -60,14 +55,14 @@ async def register(
         division=division,
         district=district,
         thana=thana,
-        profile_image=file_path,
+        profile_image=image_data,
         license_number=license_number,
         experience_years=experience_years,
         consultation_fee=consultation_fee,
         available_timeslots=available_timeslots,
     )
 
-    user = create_user(db, user_data, file_path)
+    user = create_user(db, user_data, image_data)
     return user
 
 
