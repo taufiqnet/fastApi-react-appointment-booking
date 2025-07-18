@@ -135,21 +135,12 @@ export default function Register() {
       alert("✅ Registration successful!");
       router.push("/auth/login");
     } catch (err: any) {
-<<<<<<< HEAD
       const errorDetail = err?.response?.data?.detail;
       if (Array.isArray(errorDetail)) {
         setErrors(errorDetail.map((e: any) => e.msg));
       } else {
         setErrors([errorDetail || "Registration failed. Please try again."]);
       }
-=======
-      const errorDetail = err?.response?.data?.detail;
-      if (Array.isArray(errorDetail)) {
-        setErrors(errorDetail.map((e: any) => e.msg));
-      } else {
-        setErrors([errorDetail || "Registration failed. Please try again."]);
-      }
->>>>>>> 32db5770376e2b4a45d4de9155b1b355957b5b69
     } finally {
       setIsLoading(false);
     }
