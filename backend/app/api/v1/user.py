@@ -1,6 +1,6 @@
 import logging
 from app.db.models.user import User
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.db.database import SessionLocal
@@ -31,7 +31,7 @@ def get_db():
 
 
 @router.post("/register", response_model=UserOut)
-def register(user_data: UserCreate, db: Session = Depends(get_db)):
+async def register(user_data: UserCreate = Depends(), profile_image: UploadFile = File(...), db: Session = Depends(get_db)):
     try:
         # Check if email already exists
         if user_crud.get_user_by_email(db, user_data.email):
@@ -49,7 +49,10 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
                 detail="Mobile number already registered"
             )
 
-        new_user = user_crud.create_user(db, user_data)
+        image_data = await profile_image.read()
+
+
+        new_user = user_crud.create_user(db, user_data, image_data)
         logger.info(f"✅ New user registered: {user_data.email}")
         return new_user
 
@@ -95,7 +98,7 @@ def get_all_doctors(db: Session = Depends(get_db), name: str = Query(None)):
     query = db.query(User).filter(User.user_type == "doctor")
     if name:
         query = query.filter(User.full_name.ilike(f"%{name}%"))
-    
+
     doctors = query.all()
     print(f"Found {len(doctors)} doctors")
     return [
@@ -107,5 +110,3 @@ def get_all_doctors(db: Session = Depends(get_db), name: str = Query(None)):
         }
         for doc in doctors
     ]
-
-
