@@ -8,7 +8,9 @@ def get_user_by_email(db: Session, email: str):
 def get_user_by_mobile(db: Session, mobile_number: str):
     return db.query(User).filter(User.mobile_number == mobile_number).first()
 
-def create_user(db: Session, user_data, image_data: bytes):
+from typing import Optional
+
+def create_user(db: Session, user_data, image_data: Optional[bytes]):
     user = User(
         full_name=user_data.full_name,
         email=user_data.email,
@@ -18,7 +20,7 @@ def create_user(db: Session, user_data, image_data: bytes):
         division=user_data.division,
         district=user_data.district,
         thana=user_data.thana,
-        profile_image=image_data, # Use the provided image data
+        profile_image=image_data,
         license_number=user_data.license_number,
         experience_years=user_data.experience_years,
         consultation_fee=user_data.consultation_fee,
