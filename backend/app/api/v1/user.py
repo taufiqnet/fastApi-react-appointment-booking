@@ -30,8 +30,10 @@ def get_db():
         db.close()
 
 
+from typing import Optional
+
 @router.post("/register", response_model=UserOut)
-async def register(user_data: UserCreate = Depends(), profile_image: UploadFile = File(...), db: Session = Depends(get_db)):
+async def register(user_data: UserCreate = Depends(), profile_image: Optional[UploadFile] = File(None), db: Session = Depends(get_db)):
     try:
         # Check if email already exists
         if user_crud.get_user_by_email(db, user_data.email):
@@ -49,7 +51,7 @@ async def register(user_data: UserCreate = Depends(), profile_image: UploadFile 
                 detail="Mobile number already registered"
             )
 
-        image_data = await profile_image.read()
+        image_data = await profile_image.read() if profile_image else None
 
 
         new_user = user_crud.create_user(db, user_data, image_data)

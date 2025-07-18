@@ -23,7 +23,6 @@ export default function Register() {
     available_timeslots: "",
   });
 
-  const [profileImage, setProfileImage] = useState<File | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,75 +60,15 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleImage = (e: any) => {
-    const file = e.target.files[0];
-    if (file) {
-      const validTypes = ["image/jpeg", "image/png"];
-      if (!validTypes.includes(file.type)) {
-        setErrors(["❌ Only JPEG/PNG images are allowed"]);
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors(["❌ Image must be less than 5MB"]);
-        return;
-      }
-      setProfileImage(file);
-      setErrors([]);
-    }
-  };
-
-  const validateForm = async () => {
-    const errorList: string[] = [];
-
-    if (!form.full_name) errorList.push("Full name is required");
-    if (!form.email) errorList.push("Email is required");
-    if (!form.mobile_number.match(/^\+88\d{11}$/)) errorList.push("Invalid mobile number (+88 format)");
-    if (!form.password.match(/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/)) {
-      errorList.push("Password must contain: 8+ chars, 1 uppercase, 1 number, 1 special char");
-    }
-
-    if (!["admin", "doctor", "patient"].includes(form.user_type))
-      errorList.push("Invalid user type");
-
-    if (!form.division || !form.district || !form.thana)
-      errorList.push("Complete address (division, district, thana) is required");
-
-    if (!profileImage) errorList.push("Profile image is required");
-
-    if (form.user_type === "doctor") {
-      if (!form.license_number) errorList.push("License number required for doctors");
-      if (!form.experience_years) errorList.push("Experience years required");
-      if (!form.consultation_fee) errorList.push("Consultation fee required");
-      if (!form.available_timeslots.match(/^\d{2}:\d{2}-\d{2}:\d{2}$/))
-        errorList.push("Available timeslot format must be like 10:00-11:00");
-    }
-
-    try {
-      const res = await axios.post("http://localhost:8000/api/v1/auth/check-email", {
-        email: form.email,
-        mobile_number: form.mobile_number,
-      });
-      if (!res.data.ok) errorList.push("Email or mobile already exists");
-    } catch (e) {}
-
-    setErrors(errorList);
-    return errorList.length === 0;
-  };
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!(await validateForm())) {
-      setIsLoading(false);
-      return;
-    }
 
     const formData = new FormData();
     for (const key in form) formData.append(key, (form as any)[key]);
-    if (profileImage) formData.append("profile_image", profileImage);
 
     try {
-      await axios.post("http://localhost:8000/api/v1/auth/register", formData, {
+      await axios.post("http://localhost:8000/api/v1/user/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("✅ Registration successful!");
@@ -236,17 +175,6 @@ export default function Register() {
             </select>
           </div>
 
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">Profile Image</label>
-            <input
-              type="file"
-              accept=".png,.jpeg,.jpg"
-              onChange={handleImage}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              required
-            />
-          </div>
-
           {form.user_type === "doctor" && (
             <>
               <div className="space-y-1">
@@ -294,7 +222,7 @@ export default function Register() {
           )}
 
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">Division</label>
+            <label className="block text-sm font--medium text-gray-700">Division</label>
             <select
               name="division"
               onChange={handleChange}
