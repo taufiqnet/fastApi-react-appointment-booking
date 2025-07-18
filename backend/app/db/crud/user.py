@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from sqlalchemy.orm import Session
 from app.db.models.user import User
 from app.core.security import hash_password, verify_password
@@ -60,4 +59,3 @@ def create_user(db: Session, user_data, image_path: str):
     db.commit()
     db.refresh(user)
     return user
->>>>>>> 32db5770376e2b4a45d4de9155b1b355957b5b69
