@@ -26,6 +26,7 @@ export default function Register() {
   const [errors, setErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
 
   const [divisions, setDivisions] = useState<string[]>([]);
   const [districts, setDistricts] = useState<string[]>([]);
@@ -60,15 +61,36 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+      if (!validTypes.includes(file.type)) {
+        setErrors(["Invalid file type. Please select a jpeg, jpg, png, or webp file."]);
+        return;
+      }
+      if (file.size > 1024 * 1024) {
+        setErrors(["File size must be less than 1MB."]);
+        return;
+      }
+      setProfileImage(file);
+    }
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
 
     const formData = new FormData();
-    for (const key in form) formData.append(key, (form as any)[key]);
+    for (const key in form) {
+        formData.append(key, (form as any)[key]);
+    }
+    if (profileImage) {
+        formData.append("profile_image", profileImage);
+    }
 
     try {
-      await axios.post("http://localhost:8000/api/v1/auth/register", formData, {
+      await axios.post("http://localhost:8000/api/v1/users/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("✅ Registration successful!");
@@ -220,6 +242,16 @@ export default function Register() {
               </div>
             </>
           )}
+
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Profile Image</label>
+            <input
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+              name="profile_image"
+              type="file"
+              onChange={handleFileChange}
+            />
+          </div>
 
           <div className="space-y-1">
             <label className="block text-sm font--medium text-gray-700">Division</label>

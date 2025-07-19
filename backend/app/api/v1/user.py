@@ -21,19 +21,14 @@ def test_user():
     return {"message": "✅ User route is working"}
 
 
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+from app.db.database import get_db
 
 
 from typing import Optional
+from app.utils.form_data import form_body
 
 @router.post("/register", response_model=UserOut)
-async def register(user_data: UserCreate = Depends(), profile_image: Optional[UploadFile] = File(None), db: Session = Depends(get_db)):
+async def register(user_data: UserCreate = Depends(form_body(UserCreate)), profile_image: Optional[UploadFile] = File(None), db: Session = Depends(get_db)):
     try:
         # Check if email already exists
         if user_crud.get_user_by_email(db, user_data.email):
