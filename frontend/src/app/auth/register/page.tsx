@@ -68,7 +68,7 @@ export default function Register() {
     for (const key in form) formData.append(key, (form as any)[key]);
 
     try {
-      await axios.post("http://localhost:8000/api/v1/user/register", formData, {
+      await axios.post("http://localhost:8000/api/v1/auth/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("✅ Registration successful!");
